@@ -1,16 +1,13 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { fetchProducts } from 'redux/actions/productActions';
 import ProductComponent from './ProductComponent';
 
 const ProductListing = () => {
-  const products = useSelector((state) => state.allProducts.products);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (products.length === 0) {
-      dispatch(fetchProducts());
-    }
+    dispatch(fetchProducts());
   }, []);
 
   return (

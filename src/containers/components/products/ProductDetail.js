@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchAProduct, removeSelectedProduct } from 'redux/actions/productActions';
+import { fetchAProduct } from 'redux/actions/productActions';
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -17,11 +17,6 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (productId && productId !== '') {
-      if (Object.keys(product).length !== 0 && product.id
-        && product.id === parseInt(productId, 10)) {
-        return;
-      }
-      dispatch(removeSelectedProduct());
       fetchProduct();
     }
   }, []);
@@ -29,7 +24,7 @@ const ProductDetail = () => {
   const renderProduct = (prod) => {
     const {
       image, title, price, category, description,
-    } = product;
+    } = prod;
     if (prod.error === 404) {
       return (
         <>
@@ -37,7 +32,7 @@ const ProductDetail = () => {
         </>
       );
     }
-    if (Object.keys(product).length === 0) {
+    if (Object.keys(prod).length === 0 || parseInt(productId, 10) !== product.id) {
       return <div>Masih Loading Guys</div>;
     }
     return (

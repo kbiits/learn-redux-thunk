@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import { checkCacheValid } from 'redux-cache';
 import ProductRepository from 'repositories/ProductRepository';
 import ActionTypes from '../constants/action-types';
 
@@ -17,7 +18,9 @@ export const removeSelectedProduct = () => ({
 });
 
 // Middleware for API Call
-export const fetchProducts = () => async (dispatch) => {
+export const fetchProducts = () => async (dispatch, getState) => {
+  const isCacheValid = checkCacheValid(getState, 'allProducts');
+  if (isCacheValid) return;
   const productsFromAPI = await ProductRepository.getAllProducts()
     .then((data) => data)
     .catch((err) => {
@@ -26,7 +29,14 @@ export const fetchProducts = () => async (dispatch) => {
   dispatch(setProducts(productsFromAPI));
 };
 
-export const fetchAProduct = (productId) => async (dispatch) => {
+export const fetchAProduct = (productId) => async (dispatch, getState) => {
+  if (getState().productById.id === parseInt(productId, 10)) {
+    const isCacheValid = checkCacheValid(getState, 'productById');
+    if (isCacheValid) {
+      return;
+    }
+  }
+  dispatch(removeSelectedProduct());
   const product = await ProductRepository.getProduct(productId)
     .then((data) => data)
     .catch((err) => console.log(err));
